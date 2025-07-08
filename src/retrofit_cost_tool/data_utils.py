@@ -16,7 +16,10 @@ def preprocess_data(data, features_string, features_num, target):
     
     # Split data into features and target
     X = data[features_string + features_num].copy()
-    y = data[target]
+    if target is not None:
+        y = data[target]
+    else:
+        y = None
     
     # Scale numerical variables
     scaler = StandardScaler()
