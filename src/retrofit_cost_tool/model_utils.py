@@ -17,7 +17,7 @@ def train_ridge_model(X_train, y_train, alpha_grid, cv=10):
 def train_elastic_net_model(X_train, y_train, alpha_grid, l1_ratio_grid, cv=10):
     """Train an Elastic Net model with hyperparameter tuning."""
     param_grid = {'alpha': alpha_grid, 'l1_ratio': l1_ratio_grid}
-    elastic_net = ElasticNet()
+    elastic_net = ElasticNet(max_iter=10000, tol=1e-3)
     grid_search = GridSearchCV(elastic_net, param_grid, cv=cv)
     grid_search.fit(X_train, y_train)
     return grid_search.best_estimator_
