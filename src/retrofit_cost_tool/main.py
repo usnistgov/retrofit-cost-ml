@@ -2,6 +2,7 @@
 """
 Train and save machine learning models for seismic retrofit cost prediction.
 """
+import numpy as np
 
 def main():
     # Load data
