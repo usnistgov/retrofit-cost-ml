@@ -4,13 +4,11 @@ A Python package for predicting seismic retrofit costs.
 
 ## Installation
 
-To install the package, you'll need to run the following command:
+To install the package, run the following command:
 
 ```bash
 pip install .
 ```
-
-from the root directory of the repository.
 
 ## Usage
 
@@ -33,9 +31,6 @@ The package includes several scripts that demonstrate how to use the package. Th
 ## Notebooks
 
 The package includes several Jupyter Notebooks that demonstrate how to use the package. These notebooks are located in the `notebooks/` directory.
-
-* `seismic_retrofit_cost_predictor.ipynb`: Demonstrates how to load data and make predictions using pre-trained models.
-* `model_training.ipynb`: Demonstrates how to train and save machine learning models using the training data.
 
 ## Data
 
