@@ -1,53 +1,61 @@
-# Seismic Retrofit Cost Prediction Tool
+# Seismic Retrofit Cost Tool
 
-This repository contains a Python script that allows users to load their own
-data and make predictions using pre-trained models.
+A Python package for predicting seismic retrofit costs.
 
 ## Installation
 
-To use this script, you'll need to have Python installed on your system. You'll
-also need to install the required dependencies, which can be done using pip:
+To install the package, you'll need to run the following command:
+
+```bash
+pip install .
+```
+
+from the root directory of the repository.
+
+## Usage
+
+To use the package, you can import the necessary modules and functions. For example:
+
+```python
+from retrofit_cost_tool import load_data, preprocess_data
+
+data = load_data('data/srce_train.csv')
+X, y = preprocess_data(data, features_string, features_num, target)
+```
+
+## Scripts
+
+The package includes several scripts that demonstrate how to use the package. These scripts are located in the `scripts/` directory.
+
+* `main.py`: Trains and saves machine learning models using the training data.
+* `predict.py`: Allows users to load their own data and make predictions using pre-trained models.
+
+## Notebooks
+
+The package includes several Jupyter Notebooks that demonstrate how to use the package. These notebooks are located in the `notebooks/` directory.
+
+* `seismic_retrofit_cost_predictor.ipynb`: Demonstrates how to load data and make predictions using pre-trained models.
+* `model_training.ipynb`: Demonstrates how to train and save machine learning models using the training data.
+
+## Data
+
+The package includes example data in the `data/` directory.
+
+## Models
+
+The package includes pre-trained models in the `models/` directory.
+
+## Requirements
+
+The package requires the following dependencies:
+
+* `pandas`
+* `numpy`
+* `scikit-learn`
+* `joblib`
+
+You can install these dependencies using pip:
 
 ```bash
 pip install -r requirements.txt
 ```
-
-## Usage
-
-To use the script, simply run it from the command line:
-
-```bash
-python predict.py
-```
-
-The script will prompt you to enter the path to your data file and the name of
-the model to use. Follow the prompts to make predictions.
-
-## Input Data
-
-The input data should be a CSV file containing the following columns:
-
-* `seismicity_pga050`
-* `p_obj_dummy`
-* `bldg_group_dummy`
-* `sp_dummy`
-* `occup_cond`
-* `historic_dummy`
-* `area`
-* `bldg_age`
-* `stories`
-
-## Outputs
-
-The script will output the predicted seismic retrofit costs for the input data.
-
-## Models
-
-The script comes with several pre-trained models, including:
-
-* Ridge regression
-* Elastic Net
-* Random Forest
-* Gradient Boosting
-
-You can select the model to use by entering the corresponding name when prompted.
