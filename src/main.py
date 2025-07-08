@@ -1,18 +1,17 @@
 # main.py
 """
 Train and save machine learning models for seismic retrofit cost prediction.
-
 Usage:
     python main.py
 """
 
-from data_utils import load_data, preprocess_data, split_data
-from model_utils import train_ridge_model, train_elastic_net_model, train_random_forest_model, train_gradient_boosting_model, evaluate_model
-from model_io import save_model
+import os
+import numpy as np
+from retrofit_cost_tool import load_data, preprocess_data, split_data, train_ridge_model, train_elastic_net_model, train_random_forest_model, train_gradient_boosting_model, evaluate_model, save_model
 
 def main():
     # Load data
-    file_path = 'data/srce_train.csv'
+    file_path = os.path.join('..', 'data', 'srce_train.csv')
     data = load_data(file_path)
     
     # Preprocess data
@@ -29,7 +28,6 @@ def main():
     l1_ratio_grid = np.linspace(0.1, 0.9, 10)
     n_estimators_grid = [100, 200, 300]
     max_depth_grid = [None, 5, 10]
-    
     models = {
         'ridge': train_ridge_model(X_train, y_train, alpha_grid),
         'elastic_net': train_elastic_net_model(X_train, y_train, alpha_grid, l1_ratio_grid),
@@ -43,8 +41,10 @@ def main():
         print(f'{model_name.capitalize()} RMSE: {rmse:.4f}')
     
     # Save models
+    model_dir = os.path.join('..', 'models')
+    os.makedirs(model_dir, exist_ok=True)
     for model_name, model in models.items():
-        model_path = f'model/{model_name}_model.pkl'
+        model_path = os.path.join(model_dir, f'{model_name}_model.pkl')
         save_model(model, model_path)
 
 if __name__ == "__main__":
