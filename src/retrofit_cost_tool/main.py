@@ -3,8 +3,13 @@
 Train and save machine learning models for seismic retrofit cost prediction.
 """
 import numpy as np
+import os
+from .data_utils import load_data, preprocess_data, split_data
+from .model_utils import train_ols_model, train_glm_gamma_model, train_ridge_model, train_elastic_net_model, train_random_forest_model, train_gradient_boosting_model, evaluate_model
+from .model_io import save_model
+from .model_selection import model_selection
 
-def main():
+def main(verbose=True):
     # Load data
     file_path = os.path.join('..', '..', '..', 'data', 'srce_train.csv')
     data = load_data(file_path)
@@ -24,6 +29,8 @@ def main():
     n_estimators_grid = [100, 200, 300]
     max_depth_grid = [None, 5, 10]
     models = {
+        'ols': train_ols_model(X_train, y_train),
+        'glm_gamma': train_glm_gamma_model(X_train, y_train),
         'ridge': train_ridge_model(X_train, y_train, alpha_grid),
         'elastic_net': train_elastic_net_model(X_train, y_train, alpha_grid, l1_ratio_grid),
         'random_forest': train_random_forest_model(X_train, y_train, n_estimators_grid, max_depth_grid),
@@ -31,16 +38,39 @@ def main():
     }
     
     # Evaluate models
+    model_metrics = {}
     for model_name, model in models.items():
-        rmse = evaluate_model(model, X_valid, y_valid)
-        print(f'{model_name.capitalize()} RMSE: {rmse:.4f}')
+        rmse, mae, mape = evaluate_model(model, X_valid, y_valid)
+        model_metrics[model_name] = {'rmse': rmse, 'mae': mae, 'mape': mape}
+        if verbose:
+            print(f'{model_name.capitalize()} RMSE: {rmse:.4f}, MAE: {mae:.4f}, MAPE: {mape:.2f}%')
     
-    # Save models
+    # Model selection
+    best_model_name, best_model = model_selection(models, X_train, y_train)
+    print(f'Best model: {best_model_name}')
+    
+    # Save models and metrics
     model_dir = os.path.join('..', '..', '..', 'models')
     os.makedirs(model_dir, exist_ok=True)
     for model_name, model in models.items():
         model_path = os.path.join(model_dir, f'{model_name}_model.pkl')
         save_model(model, model_path)
+        metrics_path = os.path.join(model_dir, f'{model_name}_metrics.json')
+        import json
+        with open(metrics_path, 'w') as f:
+            json.dump(model_metrics[model_name], f)
+    
+    # Save best model metrics
+    best_model_metrics_path = os.path.join(model_dir, 'best_model_metrics.json')
+    with open(best_model_metrics_path, 'w') as f:
+        import json
+        json.dump(model_metrics[best_model_name], f)
+
+    best_model_path = os.path.join(model_dir, f'{best_model_name}_model.pkl')
+    best_model_alias_path = os.path.join(model_dir, 'best_model.pkl')
+    if os.path.exists(best_model_alias_path):
+        os.remove(best_model_alias_path)
+    os.symlink(os.path.basename(best_model_path), best_model_alias_path)
 
 if __name__ == "__main__":
-    main()
+    main(verbose=True)
