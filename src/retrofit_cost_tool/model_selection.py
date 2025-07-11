@@ -50,7 +50,7 @@ def model_selection(model_train_funcs, hyperparams, X, y, outer_cv=5, inner_cv=5
         scores[model_name] = np.mean(metric_values['rmse'])
         model_metrics[model_name] = {metric: {'mean': np.mean(metric_values[metric]), 'std': np.std(metric_values[metric])} for metric in metrics}
         if verbose:
-            print(f'{model_name.capitalize()} RMSE: {scores[model_name]:.4f}')
+            print(f'{model_name.capitalize()} RMSE: {rmse_mean:.4f} +/- {rmse_std:.4f}')
 
     best_model_name = min(scores, key=scores.get)
     best_model_train_func, best_hyperparam_grid = model_train_funcs[best_model_name]
