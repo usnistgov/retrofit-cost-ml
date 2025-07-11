@@ -2,7 +2,6 @@
 """
 Train and save machine learning models for seismic retrofit cost prediction.
 """
-# src/retrofit_cost_tool/main.py
 import numpy as np
 import os
 from .data_utils import load_data, preprocess_data, split_data
@@ -10,7 +9,7 @@ from .model_utils import train_ridge_model, train_elastic_net_model, train_rando
 from .model_io import save_model
 from .model_selection import model_selection
 
-def main(verbose=True):
+def main(verbose=True, random_state=42):
     # Load data
     file_path = os.path.join('..', '..', '..', 'data', 'srce_train.csv')
     data = load_data(file_path)
@@ -22,7 +21,7 @@ def main(verbose=True):
     X, y = preprocess_data(data, features_string, features_num, target)
 
     # Split data into training and validation sets
-    X_train, X_valid, y_train, y_valid = split_data(X, y)
+    X_train, X_valid, y_train, y_valid = split_data(X, y, random_state=random_state)
 
     # Define model training functions and hyperparameter grids
     model_train_funcs = {
@@ -35,7 +34,7 @@ def main(verbose=True):
     }
 
     # Perform model selection
-    best_model_name, best_model, model_metrics = model_selection(model_train_funcs, None, X_train, y_train, verbose=verbose)
+    best_model_name, best_model, model_metrics = model_selection(model_train_funcs, None, X_train, y_train, random_state=random_state, verbose=verbose)
     print(f'Best model: {best_model_name}')
 
     # Evaluate best model on validation set
