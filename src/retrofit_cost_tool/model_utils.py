@@ -1,10 +1,22 @@
 # model_utils.py (updated)
 
-from sklearn.linear_model import Ridge, ElasticNet
+from sklearn.linear_model import LinearRegression, Ridge, ElasticNet, GammaRegressor
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 import numpy as np
+
+def train_ols_model(X_train, y_train):
+    """Train an OLS model."""
+    ols = LinearRegression()
+    ols.fit(X_train, y_train)
+    return ols
+
+def train_glm_gamma_model(X_train, y_train):
+    """Train Gamma GLM model."""
+    glm_gamma = GammaRegressor()
+    glm_gamma.fit(X_train, y_train)
+    return glm_gamma
 
 def train_ridge_model(X_train, y_train, alpha_grid, cv=10):
     """Train a Ridge regression model with hyperparameter tuning."""
@@ -42,4 +54,6 @@ def evaluate_model(model, X_valid, y_valid):
     """Evaluate the performance of a model."""
     y_pred = model.predict(X_valid)
     rmse = np.sqrt(mean_squared_error(y_valid, y_pred))
-    return rmse
+    mae = mean_absolute_error(y_valid, y_pred)
+    mape = np.mean(np.abs((y_valid - y_pred) / y_valid)) * 100
+    return rmse, mae, mape
