@@ -9,7 +9,7 @@ import os
 from .data_utils import load_data, preprocess_data
 from .model_io import load_model
 
-def predict(file_path=None, model_name='ridge'):
+def predict(file_path=None, model_name='best_model'):
     if file_path is None:
         file_path = input("Enter the path to your data file: ")
     while not os.path.exists(file_path):
@@ -37,6 +37,7 @@ def predict(file_path=None, model_name='ridge'):
     predictions = model.predict(X)
     print("Predictions:")
     print(predictions)
+    return predictions
 
 if __name__ == "__main__":
     predict()
