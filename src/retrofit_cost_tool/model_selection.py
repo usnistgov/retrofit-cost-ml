@@ -24,9 +24,11 @@ def model_selection(model_train_funcs, hyperparams, X, y, outer_cv=5, inner_cv=5
     - best_model (object): Best-performing model.
     - model_metrics (dict): Dictionary of evaluation metrics for each model.
     """
+def model_selection(model_train_funcs, hyperparams, X, y, outer_cv=5, inner_cv=5, random_state=42, verbose=False):
     scores = {}
     model_metrics = {}
     metrics = ['rmse', 'mae', 'mape']
+    best_models = {}
     for model_name, (model_train_func, hyperparam_grid) in model_train_funcs.items():
         if verbose:
             print(f'Evaluating {model_name}...')
@@ -49,13 +51,10 @@ def model_selection(model_train_funcs, hyperparams, X, y, outer_cv=5, inner_cv=5
 
         scores[model_name] = np.mean(metric_values['rmse'])
         model_metrics[model_name] = {metric: {'mean': np.mean(metric_values[metric]), 'std': np.std(metric_values[metric])} for metric in metrics}
+        best_models[model_name] = model
         if verbose:
-            print(f'{model_name.capitalize()} RMSE: {rmse_mean:.4f} +/- {rmse_std:.4f}')
+            print(f'{model_name.capitalize()} RMSE: {scores[model_name]:.4f}')
 
     best_model_name = min(scores, key=scores.get)
-    best_model_train_func, best_hyperparam_grid = model_train_funcs[best_model_name]
 
-    # Refit the best model on the entire dataset
-    best_model = best_model_train_func(X, y, *best_hyperparam_grid)
-
-    return best_model_name, best_model, model_metrics
+    return best_model_name, best_models[best_model_name], model_metrics, best_models
