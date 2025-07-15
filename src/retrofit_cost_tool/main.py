@@ -11,7 +11,7 @@ from .model_io import save_model
 from .model_selection import model_selection
 from .plot_utils import plot_predictions
 
-def main(verbose=True, random_state=42):
+def main(verbose=True, random_state=42, save_models=True, save_metrics=True):
     # Load data
     file_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'data', 'srce_train.csv')
     data = load_data(file_path)
@@ -68,6 +68,8 @@ def main(verbose=True, random_state=42):
         best_model_metrics_path = os.path.join(model_dir, 'best_model_metrics.json')
         with open(best_model_metrics_path, 'w') as f:
             json.dump(model_metrics[best_model_name], f)
+
+    return best_model_name, best_model, model_metrics, X_valid, y_valid
 
 
 if __name__ == "__main__":
