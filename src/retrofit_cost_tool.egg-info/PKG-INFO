@@ -14,6 +14,7 @@ Requires-Dist: numpy==1.26.4
 Requires-Dist: pandas==2.3.0
 Requires-Dist: scikit-learn==1.7.0
 Requires-Dist: joblib==1.5.1
+Requires-Dist: matplotlib==3.10.3
 Dynamic: author
 Dynamic: author-email
 Dynamic: classifier
