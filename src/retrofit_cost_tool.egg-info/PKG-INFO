@@ -15,6 +15,7 @@ Requires-Dist: pandas==2.3.0
 Requires-Dist: scikit-learn==1.7.0
 Requires-Dist: joblib==1.5.1
 Requires-Dist: matplotlib==3.10.3
+Requires-Dist: seaborn==0.13.2
 Dynamic: author
 Dynamic: author-email
 Dynamic: classifier
