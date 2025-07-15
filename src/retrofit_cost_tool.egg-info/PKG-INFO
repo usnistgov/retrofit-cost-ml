@@ -1,0 +1,82 @@
+Metadata-Version: 2.4
+Name: retrofit-cost-tool
+Version: 1.0
+Summary: A package for predicting seismic retrofit costs
+Home-page: https://sgitlab.nist.gov/jff/retrofit-cost-tool.git
+Author: Juan F. Fung
+Author-email: juan.fung@nist.gov
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.12,<3.13
+Description-Content-Type: text/markdown
+Requires-Dist: numpy==1.26.4
+Requires-Dist: pandas==2.3.0
+Requires-Dist: scikit-learn==1.7.0
+Requires-Dist: joblib==1.5.1
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# Seismic Retrofit Cost Tool
+
+A Python package for predicting seismic retrofit costs.
+
+## Installation
+
+To install the package, run the following command:
+
+```bash
+pip install .
+```
+
+## Usage
+
+To use the package, you can import the necessary modules and functions. For example:
+
+```python
+from retrofit_cost_tool import load_data, preprocess_data
+
+data = load_data('data/srce_train.csv')
+X, y = preprocess_data(data, features_string, features_num, target)
+```
+
+## Scripts
+
+The package includes several scripts that demonstrate how to use the package. These scripts are located in the `scripts/` directory.
+
+* `main.py`: Trains and saves machine learning models using the training data.
+* `predict.py`: Allows users to load their own data and make predictions using pre-trained models.
+
+## Notebooks
+
+The package includes several Jupyter Notebooks that demonstrate how to use the package. These notebooks are located in the `notebooks/` directory.
+
+## Data
+
+The package includes example data in the `data/` directory.
+
+## Models
+
+The package includes pre-trained models in the `models/` directory.
+
+## Requirements
+
+The package requires the following dependencies:
+
+* `pandas`
+* `numpy`
+* `scikit-learn`
+* `joblib`
+
+You can install these dependencies using pip:
+
+```bash
+pip install -r requirements.txt
+```

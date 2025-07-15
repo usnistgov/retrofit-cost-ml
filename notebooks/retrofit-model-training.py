@@ -65,7 +65,7 @@ model_train_funcs = {
 }
 
 # Model selection
-best_model_name, best_model, model_metrics = model_selection(model_train_funcs, None, X_train, y_train, verbose=True)
+best_model_name, best_model, model_metrics, best_models = model_selection(model_train_funcs, None, X_train, y_train, verbose=True)
 print(f'Best model: {best_model_name}')
 
 
@@ -94,17 +94,8 @@ print(f'Created alias for best model: {best_model_alias_path}')
 
 # %%
 # Save all models
-for model_name, model in models.items():
+for model_name, model in best_models.items():
     model_path = os.path.join('../models', f'{model_name}_model.pkl')
-    os.makedirs(os.path.dirname(model_path), exist_ok=True)
-    save_model(model, model_path)
-    print(f'Saved {model_name} model to {model_path}')
-
-# %%
-# Saving best tuned models
-for model_name, (model_train_func, hyperparam_grid) in model_train_funcs.items():
-    model = model_train_func(X, y, *hyperparam_grid)
-    model_path = os.path.join('..', 'models', f'{model_name}_model.pkl')
     os.makedirs(os.path.dirname(model_path), exist_ok=True)
     save_model(model, model_path)
     print(f'Saved {model_name} model to {model_path}')
