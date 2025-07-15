@@ -11,7 +11,7 @@ from .model_io import save_model
 from .model_selection import model_selection
 from .plot_utils import plot_predictions
 
-def main(verbose=True, random_state=42, save_models=True, save_metrics=True):
+def main(verbose=True, random_state=42, save_models=False, save_metrics=False):
     # Load data
     file_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'data', 'srce_train.csv')
     data = load_data(file_path)
