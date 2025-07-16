@@ -4,6 +4,7 @@ Seismic Retrofit Cost Predictor
 This script allows users to load their own data and make predictions using pre-trained models.
 """
 import os
+import sys
 from pathlib import Path
 from .data_utils import load_data, preprocess_data
 from .model_io import load_model
