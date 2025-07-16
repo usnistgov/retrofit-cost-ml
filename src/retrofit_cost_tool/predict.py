@@ -5,13 +5,9 @@ This script allows users to load their own data and make predictions using pre-t
 """
 import os
 import sys
-from pathlib import Path
+import pkg_resources
 from .data_utils import load_data, preprocess_data
 from .model_io import load_model
-
-def get_project_root():
-    """Get the project root directory."""
-    return Path(__file__).parent.parent.parent
 
 def predict(data, model_name='best_model'):
     """Make predictions using a trained model."""
@@ -20,10 +16,9 @@ def predict(data, model_name='best_model'):
     features_num = ['area', 'bldg_age', 'stories']
     X, _ = preprocess_data(data, features_string, features_num, target=None)
 
-    # Load the trained model
-    project_root = get_project_root()
-    model_path = project_root / 'models' / f'{model_name}.pkl'
-    model = load_model(str(model_path))
+    # Load the trained model from package
+    model_path = pkg_resources.resource_filename('retrofit_cost_tool', f'models/{model_name}.pkl')
+    model = load_model(model_path)
 
     # Make predictions
     predictions = model.predict(X)
@@ -41,11 +36,13 @@ def main():
         print(f"Loading user data from: {data_file}")
         data_path = data_file
     else:
-        # Use default synthetic data
-        # Load default data for prediction
-        project_root = get_project_root()
-        data_path = project_root / 'data' / 'synthetic_data.csv'
-        print(f"Loading default synthetic data from: {data_path}")
+        # Use packaged synthetic data
+        try:
+            data_path = pkg_resources.resource_filename('retrofit_cost_tool', 'data/synthetic_data.csv')
+            print(f"Loading default synthetic data from: {data_path}")
+        except Exception as e:
+            print(f"Error: Could not find packaged data: {e}")
+            return None
 
     # Optional model name argument
     model_name = sys.argv[2] if len(sys.argv) > 2 else 'best_model'
@@ -64,7 +61,6 @@ def main():
     except Exception as e:
         print(f"Error during prediction: {e}")
         return None
-
 
 if __name__ == "__main__":
     main()
