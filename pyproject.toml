@@ -33,4 +33,7 @@ where = ["src"]
 
 # Keep data and models external for now
 [tool.setuptools.package-data]
-"*" = ["*.md"]
+retrofit_cost_tool = [
+    "data/*.csv",
+    "models/*.pkl"
+]
