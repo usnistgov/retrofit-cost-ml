@@ -1,0 +1,11 @@
+.notes.md
+__pycache__/
+.ipynb_checkpoints/
+*.png
+build/
+dist/
+*.egg-info/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage

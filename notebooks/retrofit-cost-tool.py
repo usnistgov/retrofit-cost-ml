@@ -42,6 +42,12 @@ file_uploader = widgets.FileUpload(
     description='Upload data file',
     accept='.csv'
 )
+
+alpha_grid = np.logspace(-3, 3, 100)
+l1_ratio_grid = np.linspace(0.1, 0.9, 10)
+n_estimators_grid = [100, 200, 300]
+max_depth_grid = [None, 5, 10]
+
 # Create a dictionary of model training functions
 model_train_funcs = {
     'ols': (train_ols_model, ()),
@@ -107,6 +113,9 @@ display(file_uploader)
 display(model_selector)
 display(predict_button)
 
+# %% [markdown]
+# ## Predictions with user data
+
 # %%
 # Example usage
 print("Example usage:")
@@ -135,6 +144,9 @@ predictions_df = pd.DataFrame({'Predicted': predictions, 'Actual': actual_values
 print("Predicted vs Actual Values:")
 print(predictions_df)
 
+
+# %% [markdown]
+# ## Visualize actual vs predicted (if available)
 
 # %%
 # Plot predicted vs actual values
@@ -174,22 +186,40 @@ def plot_predictions(predictions_df, actual_values, plot_scatter=True, plot_hist
 
 
 # %%
-# Plot predicted vs actual values
-# NB: DEPRECATED
-plt.scatter(actual_values, predictions)
-plt.xlabel('Actual Values')
-plt.ylabel('Predicted Values')
-plt.title('Predicted vs Actual Values')
-plt.savefig('predicted_vs_actual.png', bbox_inches='tight', dpi=300)
-plt.show()
-
-
-# %%
 # for synthetic user data with actual values, plot actual vs predicted
 
 # Call the function with save_plots=True
 plot_predictions(predictions_df, actual_values, save_plots=True)
 
 # %%
+
+# %%
+
+# %% [markdown]
+# # Calling `predict()` directly...
+
+# %%
+from retrofit_cost_tool.predict import predict
+
+
+# %%
+# Define a function to handle button click
+def on_button_click(b):
+    file_path = list(file_uploader.value.keys())[0]
+    with open(file_path, 'wb') as f:
+        f.write(file_uploader.value[file_path]['content'])
+    predict(file_path=file_path, model_name=model_selector.value)
+
+
+
+# %%
+# Link the button click to the on_button_click function
+predict_button.on_click(on_button_click)
+
+# %% editable=true slideshow={"slide_type": ""}
+# Display the widgets
+display(file_uploader)
+display(model_selector)
+display(predict_button)
 
 # %%
