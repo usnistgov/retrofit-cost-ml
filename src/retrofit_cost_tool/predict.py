@@ -5,7 +5,7 @@ This script allows users to load their own data and make predictions using pre-t
 """
 import os
 import sys
-import pkg_resources
+from importlib import resources
 from .data_utils import load_data, preprocess_data
 from .model_io import load_model
 
@@ -17,8 +17,8 @@ def predict(data, model_name='best_model'):
     X, _ = preprocess_data(data, features_string, features_num, target=None)
 
     # Load the trained model from package
-    model_path = pkg_resources.resource_filename('retrofit_cost_tool', f'models/{model_name}.pkl')
-    model = load_model(model_path)
+    with resources.path('retrofit_cost_tool.models', f'{model_name}.pkl') as model_path:
+        model = load_model(str(model_path))
 
     # Make predictions
     predictions = model.predict(X)
@@ -38,8 +38,9 @@ def main():
     else:
         # Use packaged synthetic data
         try:
-            data_path = pkg_resources.resource_filename('retrofit_cost_tool', 'data/synthetic_data.csv')
-            print(f"Loading default synthetic data from: {data_path}")
+            with resources.path('retrofit_cost_tool.data', 'synthetic_data.csv') as data_path:
+                data_path = str(data_path)
+                print(f"Loading default synthetic data from: {data_path}")
         except Exception as e:
             print(f"Error: Could not find packaged data: {e}")
             return None

@@ -19,8 +19,6 @@
 # %%
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), '..', 'src')))
-
 from retrofit_cost_tool import load_data, preprocess_data, predict, plot_predictions
 import ipywidgets as widgets
 from IPython.display import display
@@ -33,6 +31,7 @@ file_uploader = widgets.FileUpload(
     accept='.csv'
 )
 
+# %%
 # Create a dropdown widget for model selection
 model_selector = widgets.Dropdown(
     options=['ridge', 'elastic_net', 'random_forest', 'gradient_boosting', 'ols', 'glm_gamma', 'best_model'],
@@ -41,6 +40,7 @@ model_selector = widgets.Dropdown(
     disabled=False
 )
 
+# %%
 # Create a button widget to trigger prediction
 predict_button = widgets.Button(description='Make Predictions')
 
@@ -52,8 +52,38 @@ save_plots_checkbox = widgets.Checkbox(value=False, description='Save plots')
 
 predictions_and_actuals = None
 
+# %%
 output = widgets.Output()
 
+
+# %%
+# In your notebook, replace the predict call with:
+def on_button_click(b):
+    with output:
+        output.clear_output(wait=True)
+        global predictions_and_actuals
+        file_name = file_uploader.value[0]['name']
+        file_content = file_uploader.value[0]['content']
+        with open(file_name, 'wb') as f:
+            f.write(file_content.tobytes())
+        
+        # Load and predict using the updated functions
+        data = load_data(file_name)
+        target = list(data.columns)[-1]  # assume target is the last column
+        
+        # Use the predict function from the module
+        predictions = predict(data, model_name=model_selector.value)
+        actual_values = data[target]
+        predictions_df = pd.DataFrame({'Predicted': predictions, 'Actual': actual_values})
+        predictions_and_actuals = (predictions_df, actual_values)
+        print(predictions_df.head())
+        print("\nSummary Statistics:")
+        print(predictions_df['Predicted'].describe())
+
+
+# %%
+
+# %%
 def on_button_click(b):
     with output:
         output.clear_output(wait=True)
@@ -74,6 +104,8 @@ def on_button_click(b):
         print(predictions_df['Predicted'].describe())
 
 
+
+# %%
 def on_plot_button_click(b):
     global predictions_and_actuals
     if predictions_and_actuals is not None:
@@ -87,6 +119,7 @@ def on_plot_button_click(b):
             print("Please make predictions first")
 
 
+# %%
 predict_button.on_click(on_button_click)
 plot_button.on_click(on_plot_button_click)
 

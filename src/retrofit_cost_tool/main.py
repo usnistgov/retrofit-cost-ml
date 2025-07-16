@@ -6,7 +6,7 @@ import os
 import json
 import numpy as np
 import warnings
-import pkg_resources
+from importlib import resources  # Replace pkg_resources
 from .data_utils import load_data, preprocess_data, split_data
 from .model_utils import train_ridge_model, train_elastic_net_model, train_random_forest_model, train_gradient_boosting_model, train_ols_model, train_glm_gamma_model, evaluate_model
 from .model_io import save_model
@@ -18,9 +18,10 @@ def main(verbose=True, random_state=42, save_models=False, save_metrics=False, s
         from sklearn.exceptions import ConvergenceWarning
         warnings.filterwarnings("ignore", category=ConvergenceWarning)
     
-    # Load data from package
-    data_path = pkg_resources.resource_filename('retrofit_cost_tool', 'data/srce_train.csv')
-    data = load_data(data_path)
+    # Load data from package using modern approach
+    with resources.path('retrofit_cost_tool.data', 'srce_train.csv') as data_path:
+        data = load_data(str(data_path))
+
 
     # Preprocess data
     features_string = ['seismicity_pga050', 'p_obj_dummy', 'bldg_group_dummy', 'sp_dummy', 'occup_cond', 'historic_dummy']
@@ -52,37 +53,38 @@ def main(verbose=True, random_state=42, save_models=False, save_metrics=False, s
     # Save models and metrics
     if save_models:
         # Save models to package models directory
-        model_dir = pkg_resources.resource_filename('retrofit_cost_tool', 'models')
-        os.makedirs(model_dir, exist_ok=True)
-        
-        for model_name, model in best_models.items():
-            model_path = os.path.join(model_dir, f'{model_name}_model.pkl')
-            save_model(model, model_path)
+        with resources.path('retrofit_cost_tool.models', '') as model_dir:
+            model_dir = str(model_dir)
+            os.makedirs(model_dir, exist_ok=True)
             
-        # Create best_model symlink
-        best_model_path = os.path.join(model_dir, f'{best_model_name}_model.pkl')
-        best_model_alias_path = os.path.join(model_dir, 'best_model.pkl')
-        
-        if os.path.exists(best_model_alias_path):
-            os.remove(best_model_alias_path)
-        os.symlink(f'{best_model_name}_model.pkl', best_model_alias_path)
+            for model_name, model in best_models.items():
+                model_path = os.path.join(model_dir, f'{model_name}_model.pkl')
+                save_model(model, model_path)
+                
+            # Create best_model symlink
+            best_model_path = os.path.join(model_dir, f'{best_model_name}_model.pkl')
+            best_model_alias_path = os.path.join(model_dir, 'best_model.pkl')
+            
+            if os.path.exists(best_model_alias_path):
+                os.remove(best_model_alias_path)
+            os.symlink(f'{best_model_name}_model.pkl', best_model_alias_path)
 
     if save_metrics:
         # Save metrics to package models directory
-        model_dir = pkg_resources.resource_filename('retrofit_cost_tool', 'models')
-        os.makedirs(model_dir, exist_ok=True)
-        
-        for model_name in best_models.keys():
-            metrics_path = os.path.join(model_dir, f'{model_name}_metrics.json')
-            with open(metrics_path, 'w') as f:
-                json.dump(model_metrics[model_name], f)
-                
-        best_model_metrics_path = os.path.join(model_dir, 'best_model_metrics.json')
-        with open(best_model_metrics_path, 'w') as f:
-            json.dump(model_metrics[best_model_name], f)
+        with resources.path('retrofit_cost_tool.models', '') as model_dir:
+            model_dir = str(model_dir)
+            os.makedirs(model_dir, exist_ok=True)
+            
+            for model_name in best_models.keys():
+                metrics_path = os.path.join(model_dir, f'{model_name}_metrics.json')
+                with open(metrics_path, 'w') as f:
+                    json.dump(model_metrics[model_name], f)
+                    
+            best_model_metrics_path = os.path.join(model_dir, 'best_model_metrics.json')
+            with open(best_model_metrics_path, 'w') as f:
+                json.dump(model_metrics[best_model_name], f)
 
     return best_model_name, best_model, model_metrics, X_valid, y_valid
-
 
 if __name__ == "__main__":
     main(verbose=True, save_models=True, save_metrics=True)
