@@ -21,6 +21,34 @@
 # %autoreload 2
 
 # %%
+# Check what's available
+import retrofit_cost_tool
+print(f"Available functions: {dir(retrofit_cost_tool)}")
+
+# Test data access
+from importlib import resources
+with resources.path('retrofit_cost_tool.data', 'synthetic_data.csv') as data_path:
+    print(f"Data found at: {data_path}")
+
+
+# %%
+
+# %%
+# Test model training
+from retrofit_cost_tool.main import main as train_main
+
+# Test training (with save_models=False for testing)
+print("Testing model training...")
+best_model_name, best_model, model_metrics, X_valid, y_valid = train_main(
+    verbose=True, 
+    save_models=False, 
+    save_metrics=False,
+    suppress_warnings=True
+)
+print(f"✅ Training completed. Best model: {best_model_name}")
+
+
+# %%
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), '..', 'src')))
