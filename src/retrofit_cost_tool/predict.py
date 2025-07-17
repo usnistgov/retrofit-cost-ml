@@ -53,8 +53,16 @@ def main():
         print(f"Making predictions using model: {model_name}")
         predictions = predict(data, model_name)
 
-        print("Predictions:")
-        print(predictions)
+        # Print only first 10 predictions
+        # More accurate messaging
+        if len(predictions) <= 10:
+            print(f"\nPredictions ({len(predictions)} total):")
+            print(predictions)
+        else:
+            print(f"\nPredictions (showing first 10 of {len(predictions)} total):")
+            print(predictions[:10])
+            print(f"... and {len(predictions) - 10} more predictions")
+        
         return predictions
     except FileNotFoundError as e:
         print(f"Error: {e}")
