@@ -101,20 +101,21 @@ def on_plot_button_click(b):
         predictions_df, actual_values = predictions_and_actuals
         with output:
             try:
-                # Check what parameters plot_predictions expects
-                plot_predictions(predictions_df['Predicted'], actual_values, save_plots=save_plots_checkbox.value)
+                # Pass the DataFrame directly - it already has 'Predicted' and 'Actual' columns
+                plot_predictions(predictions_df, actual_values, save_plots=save_plots_checkbox.value)
             except Exception as e:
                 print(f"Plotting error: {e}")
-                print("Trying alternative plot format...")
-                # Alternative: pass the DataFrame directly if that's what the function expects
+                # Try with explicit column access
                 try:
-                    plot_predictions(predictions_df, actual_values, save_plots=save_plots_checkbox.value)
+                    plot_predictions(predictions_df['Predicted'], predictions_df['Actual'], save_plots=save_plots_checkbox.value)
                 except Exception as e2:
                     print(f"Alternative plotting also failed: {e2}")
+                    import traceback
+                    traceback.print_exc()
     else:
         with output:
-            output.clear_output(wait=True)
             print("Please make predictions first")
+
 
 predict_button.on_click(on_button_click)
 plot_button.on_click(on_plot_button_click)
