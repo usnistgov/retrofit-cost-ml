@@ -221,36 +221,13 @@ def on_plot_button_click(b):
         predictions_df, actual_values, has_ground_truth = predictions_and_actuals
         with output:
             try:
-                if has_ground_truth:
-                    # Plot with ground truth comparison
-                    plot_predictions(predictions_df, actual_values, save_plots=save_plots_checkbox.value)
-                else:
-                    # Plot predictions only (histogram/distribution)
-                    import matplotlib.pyplot as plt
-                    
-                    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
-                    
-                    # Histogram of predictions
-                    ax1.hist(predictions_df['Predicted'], bins=30, alpha=0.7, color='skyblue', edgecolor='black')
-                    ax1.set_xlabel('Predicted Retrofit Cost ($)')
-                    ax1.set_ylabel('Frequency')
-                    ax1.set_title('Distribution of Predicted Costs')
-                    ax1.ticklabel_format(style='plain', axis='x')
-                    
-                    # Box plot
-                    ax2.boxplot(predictions_df['Predicted'])
-                    ax2.set_ylabel('Predicted Retrofit Cost ($)')
-                    ax2.set_title('Prediction Distribution (Box Plot)')
-                    ax2.ticklabel_format(style='plain', axis='y')
-                    
-                    plt.tight_layout()
-                    
-                    if save_plots_checkbox.value:
-                        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                        plt.savefig(f'predictions_distribution_{timestamp}.png', dpi=300, bbox_inches='tight')
-                        print("📊 Plot saved as PNG file")
-                    
-                    plt.show()
+                plot_predictions(
+                    predictions_df, 
+                    actual_values if has_ground_truth else None, 
+                    plot_scatter=has_ground_truth, 
+                    plot_histograms=True, 
+                    save_plots=save_plots_checkbox.value
+                )
                     
             except Exception as e:
                 print(f"Plotting error: {e}")
@@ -259,6 +236,7 @@ def on_plot_button_click(b):
     else:
         with output:
             print("Please make predictions first")
+
 
 def on_save_csv_click(b):
     global predictions_and_actuals, current_data_info, uploaded_data
