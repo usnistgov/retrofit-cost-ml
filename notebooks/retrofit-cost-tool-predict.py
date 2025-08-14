@@ -335,12 +335,6 @@ results_section = widgets.VBox([
     output
 ])
 
-# Display all sections
-display(upload_section)
-display(action_section)
-display(export_section)
-display(results_section)
-
 # %%
 # Optional: Instructions for users
 instructions = widgets.HTML("""
@@ -359,3 +353,10 @@ instructions = widgets.HTML("""
 """)
 
 display(instructions)
+
+# %%
+# Display all sections
+display(upload_section)
+display(action_section)
+display(export_section)
+display(results_section)
