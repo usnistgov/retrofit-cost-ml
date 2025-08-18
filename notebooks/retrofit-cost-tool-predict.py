@@ -25,34 +25,6 @@ from IPython.display import display
 import pandas as pd
 from datetime import datetime
 
-# %%
-# Test prediction with packaged data
-from importlib import resources
-
-# Load the packaged synthetic data directly
-with resources.path('retrofit_cost_tool.data', 'synthetic_data.csv') as data_path:
-    data = load_data(str(data_path))
-
-# Make predictions using the predict function
-predictions = predict(data, model_name='best_model')
-
-if predictions is not None:
-    print(f"✅ Generated {len(predictions)} predictions using packaged data")
-    print(f"Sample predictions: {predictions[:5]}")
-else:
-    print("❌ Prediction failed")
-
-# %%
-# Check if ground truth exists in packaged data
-has_ground_truth = 'ystruct19' in data.columns
-if has_ground_truth:
-    predictions_df = pd.DataFrame({'Predicted': predictions, 'Actual': data['ystruct19']})
-    print("✅ Predictions from packaged data (with ground truth):")
-else:
-    predictions_df = pd.DataFrame({'Predicted': predictions})
-    print("✅ Predictions from packaged data (no ground truth):")
-print(predictions_df.head())
-
 # %% [markdown]
 # # Demo user module
 
