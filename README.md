@@ -1,11 +1,12 @@
-# Retrofit Cost Tool
+# Retrofit Cost Prediction Tool
 
-A Python package for predicting seismic retrofit costs using machine learning models.
+A Python package for predicting seismic retrofit costs using pre-trained machine
+learning models.
 
 ## Overview
 
-This tool provides machine learning models to predict the cost of seismic
-retrofits for buildings. It includes pre-trained models and allows users to make
+This tool provides pre-trained machine learning models to predict the cost of
+seismic retrofits for buildings. Users can select any of the models to make
 predictions on their own data.
 
 ## Installation
@@ -72,23 +73,47 @@ best_model_name, best_model, metrics, X_valid, y_valid = main(
 )
 ```
 
+### 3. Interactive Jupyter Notebook
+
+For users who prefer a graphical interface, use our interactive notebook:
+
+```bash
+# Launch Jupyter and open the prediction notebook
+jupyter notebook notebooks/retrofit-cost-tool-predict.ipynb
+```
+
+**Features:**
+- 📁 **File upload widget** - drag and drop your CSV files
+- 🤖 **Model selection dropdown** - choose from all available models
+- 📊 **Interactive plotting** - visualize predictions vs actual values
+- 💾 **CSV export** - save predictions with original features and metadata
+- 📈 **Feature analysis** - summary statistics by building characteristics
+
 ## Data Format
 
 Your input data should be a CSV file with the following columns:
 
-### Required Features:
-- `seismicity_pga050`: Seismic hazard measure
-- `p_obj_dummy`: Building performance objective (dummy variable)
-- `bldg_group_dummy`: Building group classification (dummy variable)
-- `sp_dummy`: Structural performance dummy variable
-- `occup_cond`: Occupancy condition
-- `historic_dummy`: Historic building designation (dummy variable)
-- `area`: Building area (square feet)
-- `bldg_age`: Building age (years)
-- `stories`: Number of stories
+### Required Columns
 
-### Target Variable (for training):
-- `ystruct19`: Structural retrofit cost (target variable)
+| Column | Description | Type | Example | Valid Range |
+|--------|-------------|------|---------|-------------|
+| `area` | Building area (sq ft) | Numeric | 5000 | > 0 |
+| `bldg_age` | Building age (years) | Numeric | 45 | ≥ 0 |
+| `stories` | Number of stories | Numeric | 3 | ≥ 1 |
+| `seismicity_pga050` | Peak ground acceleration | Numeric | 0.4 | 0-1 |
+| `p_obj_dummy` | Performance objective | Binary | 1 | 0 or 1 |
+| `bldg_group_dummy` | Building type | Binary | 1 | 0 or 1 |
+| `sp_dummy` | Structural performance | Binary | 0 | 0 or 1 |
+| `occup_cond` | Occupancy condition | Numeric | 1 | 1-3 |
+| `historic_dummy` | Historic designation | Binary | 0 | 0 or 1 |
+
+### Optional Columns
+- `ystruct19`: Actual retrofit costs (for model validation and comparison)
+- `building_id`: Building identifier (for tracking and reporting)
+
+### Sample Data
+Download example data: [synthetic_data.csv](src/retrofit_cost_tool/data/synthetic_data.csv)
+
 
 ## Model Information
 
@@ -103,6 +128,102 @@ The package includes several pre-trained models:
 
 The `best_model` automatically selects the best performing model based on cross-validation.
 
+## Training Data
+
+### Dataset Overview
+
+The models were trained on a comprehensive dataset of seismic
+retrofit projects to ensure robust predictions across different building types
+and seismic conditions.[^1]
+
+**Training Dataset Characteristics:**
+
+- **Size**: 1526 buildings
+- **Geographic Coverage**: United States
+- **Building Types**: Office buildings, residential structures, mixed-use, historic buildings
+- **Seismic Zones**: Range of seismic hazard levels
+- ** Performance Objectives**: Mainly Life Safety (LS) but also some Damage
+  Control (DC) and Immediate Occupancy (IO)
+- **Target**: Structural retrofit cost (per square foot)
+
+### Data Preprocessing
+
+- Feature scaling and normalization
+- Categorical variable encoding
+- Interaction term creation
+
+### Limitations
+
+- Training data is comprehensive but outdated and does not represent current
+  technical practices for seismic retrofits
+- Performance may vary in areas with different building codes
+- Costs scaled to 2019 USD. Users should adjust for inflation and local market
+  factors
+
+### Synthetic Data for Testing
+
+For users who want to test the package without real building data:
+
+```python
+from retrofit_cost_tool.data_utils import load_data
+from importlib import resources
+
+# Load synthetic test data
+with resources.path('retrofit_cost_tool.data', 'synthetic_data.csv') as data_path:
+    test_data = load_data(str(data_path))
+```
+
+**Synthetic Data Features:**
+
+- Realistic building parameter distributions, based on original (training) data
+- Covers full range of model inputs
+- Includes ground truth target for validation
+- Safe for public sharing and testing
+
+
+[^1]: FEMA (1994). Typical Costs for Seismic Rehabilitation of Existing Buildings. Vol 1: Summary. FEMA 156, Second Edition.
+
+
+## Examples
+
+### Basic Building Analysis
+
+```python
+import pandas as pd
+from retrofit_cost_tool import predict
+
+# Create sample building data
+building_data = pd.DataFrame({
+    'area': [5000, 8000, 12000],
+    'bldg_age': [45, 30, 60], 
+    'stories': [3, 5, 8],
+    'seismicity_pga050': [0.4, 0.6, 0.5],
+    'p_obj_dummy': [1, 0, 1],
+    'bldg_group_dummy': [1, 1, 1],
+    'sp_dummy': [0, 1, 0],
+    'occup_cond': [1, 2, 2],
+    'historic_dummy': [0, 0, 1]
+})
+
+# Get predictions
+costs = predict(building_data, model_name='best_model')
+print(f"Predicted costs: ${costs[0]:,.0f}, ${costs[1]:,.0f}, ${costs[2]:,.0f}")
+```
+
+### Portfolio Analysis
+
+```python
+# Load building portfolio
+portfolio = load_data('my_buildings.csv')
+
+# Compare different models
+for model in ['ridge_model', 'random_forest_model', 'best_model']:
+    predictions = predict(portfolio, model_name=model)
+    total_cost = sum(predictions)
+    print(f"{model}: Total portfolio cost = ${total_cost:,.0f}")
+```
+
+
 ## Development
 
 ### Project Structure
@@ -111,20 +232,21 @@ The `best_model` automatically selects the best performing model based on cross-
 retrofit-cost-tool/
 ├── src/retrofit_cost_tool/
 │   ├── __init__.py
-│   ├── main.py              # Model training
-│   ├── predict.py           # Prediction functionality
-│   ├── data_utils.py        # Data loading and preprocessing
-│   ├── model_utils.py       # Model training functions
-│   ├── model_io.py          # Model saving/loading
-│   ├── model_selection.py   # Model selection logic
-│   ├── plot_utils.py        # Visualization utilities
-│   ├── data/               # Training and synthetic data
-│   └── models/             # Pre-trained models
+│   ├── main.py                          # Model training
+│   ├── predict.py                       # Prediction functionality
+│   ├── data_utils.py                    # Data loading and preprocessing
+│   ├── model_utils.py                   # Model training functions
+│   ├── model_io.py                      # Model saving/loading
+│   ├── model_selection.py               # Model selection logic
+│   ├── plot_utils.py                    # Visualization utilities
+│   ├── data/                            # Training and synthetic data
+│   └── models/                          # Pre-trained models
 ├── scripts/
-│   ├── main.py             # Training script
-│   └── predict.py          # Prediction script
-├── notebooks/              # Jupyter notebooks
-├── pyproject.toml          # Package configuration
+│   ├── main.py                          # Training script
+│   └── predict.py                       # Prediction script
+├── notebooks/
+│   ├── retrofit-cost-tool-predict.ipynb # Interactive prediction interface
+├── pyproject.toml                       # Package configuration
 └── README.md
 ```
 
@@ -140,6 +262,31 @@ python -m build
 # Install in development mode
 pip install -e .
 ```
+
+## Troubleshooting
+
+### Common Issues
+
+**"Column not found" errors:**
+- Ensure your CSV has all required columns with exact names (case-sensitive)
+- Use the interactive notebook for automatic data validation
+
+**"Model not found" errors:**
+- Available models: `ridge_model`, `elastic_net_model`, `random_forest_model`, `gradient_boosting_model`, `ols_model`, `glm_gamma_model`, `best_model`
+
+**Unexpected predictions:**
+- Verify data ranges (area > 0, age ≥ 0, dummy variables are 0/1)
+- Check for missing values in your data
+
+**Jupyter notebook widget issues:**
+- Install widget dependencies: `pip install ipywidgets`
+- Enable widgets: `jupyter nbextension enable --py widgetsnbextension`
+- Restart Jupyter after installation
+
+### Getting Help
+
+- Check data format with the built-in validation
+- Contact: juan.fung@nist.gov
 
 ## License
 
