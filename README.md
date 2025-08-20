@@ -11,13 +11,13 @@ predictions on their own data.
 
 ## Installation
 
-### Stable Release (From GitHub)
+### Stable Release (GitHub)
 
 ```bash
 pip install git+https://github.com/usnistgov/retrofit-cost-ml.git
 ```
 
-### Development (From NIST GitLab)
+### Development (Internal via NIST GitLab)
 
 ```bash
 pip install git+https://sgitlab.nist.gov/jff/retrofit-cost-tool.git
@@ -148,7 +148,7 @@ and seismic conditions.[^1]
 - **Geographic Coverage**: United States
 - **Building Types**: Office buildings, residential structures, mixed-use, historic buildings
 - **Seismic Zones**: Range of seismic hazard levels
-- ** Performance Objectives**: Mainly Life Safety (LS) but also some Damage
+- **Performance Objectives**: Mainly Life Safety (LS) but also some Damage
   Control (DC) and Immediate Occupancy (IO)
 - **Target**: Structural retrofit cost (per square foot)
 
