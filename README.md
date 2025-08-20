@@ -11,7 +11,13 @@ predictions on their own data.
 
 ## Installation
 
-### From GitLab (Recommended)
+### Stable Release (From GitHub)
+
+```bash
+pip install git+https://github.com/usnistgov/retrofit-cost-ml.git
+```
+
+### Development (From NIST GitLab)
 
 ```bash
 pip install git+https://sgitlab.nist.gov/jff/retrofit-cost-tool.git
